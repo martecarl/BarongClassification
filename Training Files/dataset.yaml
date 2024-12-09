@@ -1,0 +1,16 @@
+train: C:/Users/Carl/Thesis/MLDataset/train
+val: C:/Users/Carl/Thesis/MLDataset/val
+test: C:/Users/Carl/Thesis/MLDataset/test
+
+nc: 4  # Number of classes
+names:
+  0: 'ArtDeco'
+  1: 'Ethnic'
+  2: 'Special'
+  3: 'Traditional'
+
+weights:
+  0: 1.219  # ArtDeco
+  1: 2.016  # Ethnic
+  2: 1.551  # Special
+  3: 1.145  # Traditional
