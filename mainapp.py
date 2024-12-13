@@ -109,8 +109,14 @@ if __name__ == '__main__':
         print(f"Predicted Label: {predicted_label}")
         print(f"Confidence: {confidence:.2f}")
 
-        print("Press 'c' to capture another image or any other key to quit.")
-        if cv2.waitKey(0) & 0xFF != ord('c'):
+        # Ask if the user wants to capture another image or quit
+        print("Press 'c' to capture another image or 'q' to quit.")
+        key = cv2.waitKey(0) & 0xFF  # Wait for key press
+        if key == ord('q'):  # If 'q' is pressed, exit the loop
+            print("Exiting program.")
+            break
+        elif key != ord('c'):  # If any key other than 'c' or 'q' is pressed, exit
             break
 
-    print("Exiting program. Goodbye!")
+    cv2.destroyAllWindows()
+    print("Goodbye!")
