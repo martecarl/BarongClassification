@@ -11,39 +11,44 @@ model = YOLO(MODEL_PATH)  # Load the YOLOv8 model
 # Class names
 class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
-# Camera capture and preview
+# Camera capture and preview using OpenCV
+
 def capture_image_with_preview():
-    cap = cv2.VideoCapture(0)  # Open the camera (adjust index if needed)
+    # Open the camera using OpenCV
+    cap = cv2.VideoCapture(0)  # 0 is the default camera index
     if not cap.isOpened():
-        print("Error: Camera not accessible")
+        print("Error: Unable to access the camera.")
         return None
 
-    print("Press 's' to capture an image, or 'q' to quit.")
+    print("Press 's' to capture an image or 'q' to quit.")
+    image_path = None
+
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Error: Failed to capture image")
+            print("Error: Failed to grab frame from the camera.")
             break
 
-        # Show the live preview
-        cv2.imshow('Camera Preview', frame)
+        # Display the live preview
+        cv2.imshow("Live Preview", frame)
 
-        # Check for key presses
         key = cv2.waitKey(1) & 0xFF
-        if key == ord('s'):  # 's' to save the image
+        if key == ord('s'):
+            # Save the captured frame as an image
             timestamp = int(time.time())
             image_path = f'captured_image_{timestamp}.jpg'
             cv2.imwrite(image_path, frame)
             print(f"Image saved as {image_path}")
-            cap.release()
-            cv2.destroyAllWindows()
-            return image_path
-        elif key == ord('q'):  # 'q' to quit
+            break
+        elif key == ord('q'):
+            print("Exiting without capturing.")
             break
 
+    # Release the camera and close OpenCV windows
     cap.release()
     cv2.destroyAllWindows()
-    return None
+
+    return image_path
 
 # Predict with the model
 def predict(image_path):
@@ -67,9 +72,6 @@ if __name__ == '__main__':
         predicted_label, confidence = predict(image_path)
         print(f"Predicted Label: {predicted_label}")
         print(f"Confidence: {confidence:.2f}")
-
-        # Optionally delete the captured image after classification
-        # os.remove(image_path)
 
         print("Press 'c' to capture another image or any other key to quit.")
         if cv2.waitKey(0) & 0xFF != ord('c'):
