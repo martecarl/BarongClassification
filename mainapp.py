@@ -1,4 +1,5 @@
 import os
+import cv2
 from picamera2 import Picamera2, Preview
 from ultralytics import YOLO  # For .pt model
 import numpy as np
