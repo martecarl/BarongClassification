@@ -1,59 +1,78 @@
-import os
-import torch
-from torchvision import transforms
-from PIL import Image
-import subprocess
-from datetime import datetime
+import cv2
+import time
+from ultralytics import YOLO  # For .pt model
 
-# Load your trained model
-model_path = "model.pth"  # Replace with your model's file path
-model = torch.load(model_path, map_location=torch.device('cpu'))
-model.eval()
+# Path to your YOLOv8 .pt model
+MODEL_PATH = '/home/carl/BarongClassification/yolov8n-cls.pt'
 
-# Define the class names (replace with your Barong design classifications)
-class_names = ["Art Deco", "Ethnic", "Special", "Traditional"]
+# Load the YOLOv8 model
+model = YOLO(MODEL_PATH)  # Load the YOLOv8 model
 
-# Image transformations
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),  # Adjust size based on your model's input requirements
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
+# Class names
+class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
-# Capture image using libcamera
-def capture_image(output_folder):
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+# Camera capture and preview
+def capture_image_with_preview():
+    cap = cv2.VideoCapture(0)  # Open the camera (adjust index if needed)
+    if not cap.isOpened():
+        print("Error: Camera not accessible")
+        return None
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    image_path = os.path.join(output_folder, f"barong_{timestamp}.jpg")
+    print("Press 's' to capture an image, or 'q' to quit.")
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("Error: Failed to capture image")
+            break
 
-    # Capture image using libcamera
-    capture_command = f"libcamera-jpeg -o {image_path} --width 640 --height 480"
-    subprocess.run(capture_command, shell=True, check=True)
+        # Show the live preview
+        cv2.imshow('Camera Preview', frame)
 
-    print(f"Image captured and saved to: {image_path}")
-    return image_path
+        # Check for key presses
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('s'):  # 's' to save the image
+            timestamp = int(time.time())
+            image_path = f'captured_image_{timestamp}.jpg'
+            cv2.imwrite(image_path, frame)
+            print(f"Image saved as {image_path}")
+            cap.release()
+            cv2.destroyAllWindows()
+            return image_path
+        elif key == ord('q'):  # 'q' to quit
+            break
 
-# Classify image
-def classify_image(image_path):
-    image = Image.open(image_path).convert("RGB")
-    input_tensor = transform(image).unsqueeze(0)
+    cap.release()
+    cv2.destroyAllWindows()
+    return None
 
-    with torch.no_grad():
-        outputs = model(input_tensor)
-        _, predicted = torch.max(outputs, 1)
-        class_label = class_names[predicted.item()]
+# Predict with the model
+def predict(image_path):
+    results = model.predict(image_path)
+    class_id = results[0].probs.top1  # Get top-1 class ID
+    confidence = results[0].probs.top1conf  # Confidence score
 
-    print(f"Classified as: {class_label}")
-    return class_label
+    predicted_label = class_names[class_id]
+    return predicted_label, confidence
 
-# Main function
-def main():
-    output_folder = "captured_images"
-    image_path = capture_image(output_folder)
-    class_label = classify_image(image_path)
-    print(f"Image {os.path.basename(image_path)} classified as: {class_label}")
+# Main script
+if __name__ == '__main__':
+    print("Starting Barong Design Classification...")
+    while True:
+        image_path = capture_image_with_preview()
+        if image_path is None:
+            print("No image captured. Exiting...")
+            break
 
-if __name__ == "__main__":
-    main()
+        print("Classifying image...")
+        predicted_label, confidence = predict(image_path)
+        print(f"Predicted Label: {predicted_label}")
+        print(f"Confidence: {confidence:.2f}")
+
+        # Optionally delete the captured image after classification
+        # os.remove(image_path)
+
+        print("Press 'c' to capture another image or any other key to quit.")
+        if cv2.waitKey(0) & 0xFF != ord('c'):
+            break
+
+    print("Exiting program. Goodbye!")
