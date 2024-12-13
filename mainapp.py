@@ -1,8 +1,6 @@
-from picamera2 import Picamera2, Preview
+import os
+import cv2
 from ultralytics import YOLO  # For .pt model
-from PIL import Image
-import numpy as np
-import time
 
 # Path to your YOLOv8 .pt model
 MODEL_PATH = '/home/carl/BarongClassification/yolov8n-cls.pt'
@@ -13,39 +11,63 @@ model = YOLO(MODEL_PATH)  # Load the YOLOv8 model
 # Class names
 class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
-# Initialize the Picamera2
-def init_camera():
-    picam2 = Picamera2()
-    picam2.configure(picam2.create_preview_configuration())  # Set up live preview
-    picam2.start_preview(Preview.QTGL)  # Use OpenGL for preview window (might require QT)
-    picam2.start()  # Start the camera
-    return picam2
+# Directory to store classified images
+classified_images_dir = "/home/carl/classified_images"
+os.makedirs(classified_images_dir, exist_ok=True)
 
-# Capture image with live preview using Picamera2
-def capture_image_with_live_preview(picam2):
-    print("Live preview started. Press 'Spacebar' to capture an image or 'Esc' to exit.")
+# Function to capture image and handle user decision
+def capture_and_ask_user():
+    cap = cv2.VideoCapture(0)  # Open the default camera
+    if not cap.isOpened():
+        print("Error: Could not open the camera.")
+        return None
+
+    print("Capture image process started. Press 'Spacebar' to capture an image or 'Esc' to exit.")
     image_path = "/home/carl/captured_image.jpg"
 
-    while True:
-        # Capture a frame
-        frame = picam2.capture_array()
-        
-        # Display the live feed (using PIL for display)
-        img = Image.fromarray(frame)
-        img.show()
+    # Capture an image
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to grab frame from the camera.")
+        cap.release()
+        return None
 
-        # Wait for user input
-        key = input("Press 'Spacebar' to capture or 'Esc' to exit: ").strip().lower()
-        if key == 'esc':  # Exit without capturing
-            print("Exiting without capturing.")
-            return None
-        elif key == ' ':  # Spacebar to capture
-            # Save the captured image
-            img.save(image_path)
-            print(f"Image captured and saved at {image_path}")
-            break
+    # Display captured image for user to decide
+    cv2.imshow("Captured Image - Press 'y' to keep, 'n' to discard", frame)
 
-    return image_path
+    key = cv2.waitKey(0) & 0xFF
+    if key == 27:  # Esc key to exit
+        print("Exiting without capturing.")
+        cap.release()
+        cv2.destroyAllWindows()
+        return None
+    elif key == ord('y'):  # 'y' to keep the image
+        print("Image kept for classification.")
+        # Save the image
+        cv2.imwrite(image_path, frame)
+        cap.release()
+        cv2.destroyAllWindows()
+        return image_path
+    elif key == ord('n'):  # 'n' to discard the image
+        print("Image discarded. Capturing a new image.")
+        cap.release()
+        cv2.destroyAllWindows()
+        return None
+
+# Function to rename the image and prepare for classification
+def rename_and_save_image(image_path):
+    # Find the next available filename
+    existing_files = os.listdir(classified_images_dir)
+    existing_files = [f for f in existing_files if f.startswith("classify_")]
+    existing_files.sort()
+    
+    next_index = len(existing_files) + 1
+    new_image_name = f"classify_{next_index}.jpg"
+    new_image_path = os.path.join(classified_images_dir, new_image_name)
+    
+    os.rename(image_path, new_image_path)
+    print(f"Image renamed and saved as {new_image_name}")
+    return new_image_path
 
 # Predict with the model
 def predict(image_path):
@@ -59,24 +81,22 @@ def predict(image_path):
 # Main script
 if __name__ == '__main__':
     print("Starting Barong Design Classification...")
-    
-    # Initialize the camera
-    picam2 = init_camera()
-
     while True:
-        image_path = capture_image_with_live_preview(picam2)
+        image_path = capture_and_ask_user()
         if image_path is None:
             print("No image captured. Exiting...")
             break
 
+        # Rename the image if it is chosen for classification
+        classified_image_path = rename_and_save_image(image_path)
+
         print("Classifying image...")
-        predicted_label, confidence = predict(image_path)
+        predicted_label, confidence = predict(classified_image_path)
         print(f"Predicted Label: {predicted_label}")
         print(f"Confidence: {confidence:.2f}")
 
-        # Ask user if they want to capture another image
-        again = input("Press 'c' to capture another image or any other key to quit: ").strip().lower()
-        if again != 'c':
+        print("Press 'c' to capture another image or any other key to quit.")
+        if cv2.waitKey(0) & 0xFF != ord('c'):
             break
 
     print("Exiting program. Goodbye!")
