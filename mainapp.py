@@ -1,5 +1,8 @@
-import cv2
+from picamera2 import Picamera2
 from ultralytics import YOLO  # For .pt model
+from PIL import Image
+import numpy as np
+import time
 
 # Path to your YOLOv8 .pt model
 MODEL_PATH = '/home/carl/BarongClassification/yolov8n-cls.pt'
@@ -10,40 +13,36 @@ model = YOLO(MODEL_PATH)  # Load the YOLOv8 model
 # Class names
 class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
-# Camera capture and live preview using OpenCV
-def capture_image_with_live_preview():
-    cap = cv2.VideoCapture(0)  # Open the default camera
-    if not cap.isOpened():
-        print("Error: Could not open the camera.")
-        return None
+# Initialize the Picamera2
+def init_camera():
+    picam2 = Picamera2()
+    picam2.start()
+    return picam2
 
+# Capture image with live preview using Picamera2
+def capture_image_with_live_preview(picam2):
     print("Live preview started. Press 'Spacebar' to capture an image or 'Esc' to exit.")
     image_path = "/home/carl/captured_image.jpg"
 
     while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("Failed to grab frame from the camera.")
-            break
+        # Capture a frame
+        frame = picam2.capture_array()
+        
+        # Display the live feed (using PIL for display)
+        img = Image.fromarray(frame)
+        img.show()
 
-        # Display the live feed
-        cv2.imshow("Live Preview - Press Spacebar to Capture", frame)
-
-        # Wait for a key press
-        key = cv2.waitKey(1) & 0xFF
-        if key == 27:  # Esc key to exit
+        # Wait for user input
+        key = input("Press 'Spacebar' to capture or 'Esc' to exit: ").strip().lower()
+        if key == 'esc':  # Exit without capturing
             print("Exiting without capturing.")
-            cap.release()
-            cv2.destroyAllWindows()
             return None
-        elif key == 32:  # Spacebar to capture
+        elif key == ' ':  # Spacebar to capture
             # Save the captured image
-            cv2.imwrite(image_path, frame)
+            img.save(image_path)
             print(f"Image captured and saved at {image_path}")
             break
 
-    cap.release()
-    cv2.destroyAllWindows()
     return image_path
 
 # Predict with the model
@@ -58,8 +57,12 @@ def predict(image_path):
 # Main script
 if __name__ == '__main__':
     print("Starting Barong Design Classification...")
+    
+    # Initialize the camera
+    picam2 = init_camera()
+
     while True:
-        image_path = capture_image_with_live_preview()
+        image_path = capture_image_with_live_preview(picam2)
         if image_path is None:
             print("No image captured. Exiting...")
             break
@@ -69,8 +72,9 @@ if __name__ == '__main__':
         print(f"Predicted Label: {predicted_label}")
         print(f"Confidence: {confidence:.2f}")
 
-        print("Press 'c' to capture another image or any other key to quit.")
-        if cv2.waitKey(0) & 0xFF != ord('c'):
+        # Ask user if they want to capture another image
+        again = input("Press 'c' to capture another image or any other key to quit: ").strip().lower()
+        if again != 'c':
             break
 
     print("Exiting program. Goodbye!")
