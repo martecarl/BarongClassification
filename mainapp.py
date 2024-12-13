@@ -1,39 +1,26 @@
-import os
-from picamera2 import Picamera2, Preview
 import cv2
+from picamera2 import Picamera2
 from ultralytics import YOLO  # For .pt model
 
 # Path to your YOLOv8 .pt model
 MODEL_PATH = '/home/carl/BarongClassification/yolov8n-cls.pt'
 
 # Load the YOLOv8 model
-model = YOLO(MODEL_PATH)  # Load the YOLOv8 model
+model = YOLO(MODEL_PATH)
 
 # Class names
 class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
-# Directory to store classified images
-classified_images_dir = "/home/carl/classified_images"
-os.makedirs(classified_images_dir, exist_ok=True)
-
-# Initialize Picamera2
+# Initialize camera
 def init_camera():
     picam2 = Picamera2()
-    picam2.configure(picam2.create_still_configuration())  # Set up for still image capture
-    picam2.start()  # Start the camera
+    picam2.configure(picam2.create_still_configuration())  # Set up still image capture
+    picam2.start()
     return picam2
 
-# Resize image to a manageable size
-def resize_image(image, width=1024, height=800):
-    # Resize image maintaining the aspect ratio
-    aspect_ratio = float(image.shape[1]) / float(image.shape[0])
-    new_width = width
-    new_height = int(width / aspect_ratio)
-    if new_height > height:
-        new_height = height
-        new_width = int(height * aspect_ratio)
-    resized_image = cv2.resize(image, (new_width, new_height))
-    return resized_image
+# Function to resize image
+def resize_image(image, width, height):
+    return cv2.resize(image, (width, height))
 
 # Function to capture image and handle user decision
 def capture_and_ask_user(picam2):
@@ -67,19 +54,20 @@ def capture_and_ask_user(picam2):
         cv2.destroyAllWindows()
         return None
 
-# Function to rename the image and prepare for classification
+# Rename and save the image
 def rename_and_save_image(image_path):
-    # Find the next available filename
-    existing_files = os.listdir(classified_images_dir)
-    existing_files = [f for f in existing_files if f.startswith("classify_")]
-    existing_files.sort()
-    
-    next_index = len(existing_files) + 1
-    new_image_name = f"classify_{next_index}.jpg"
-    new_image_path = os.path.join(classified_images_dir, new_image_name)
-    
+    # Generate new name like classify_1, classify_2, etc.
+    import os
+    folder_path = '/home/carl/BarongClassification/classified_images/'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    existing_files = os.listdir(folder_path)
+    count = len([file for file in existing_files if file.startswith('classify_')])
+
+    new_image_path = os.path.join(folder_path, f'classify_{count + 1}.jpg')
     os.rename(image_path, new_image_path)
-    print(f"Image renamed and saved as {new_image_name}")
+    print(f"Image renamed and saved as {new_image_path}")
     return new_image_path
 
 # Predict with the model
@@ -99,7 +87,7 @@ if __name__ == '__main__':
         image_path = capture_and_ask_user(picam2)
         if image_path is None:
             print("No image captured. Continuing to capture new image...")
-            continue  # Continue the loop to capture a new image
+            continue  # Skip classification and move on to the next image capture
 
         # Rename the image if it is chosen for classification
         classified_image_path = rename_and_save_image(image_path)
