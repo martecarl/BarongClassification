@@ -6,9 +6,9 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-model = YOLO('C:\\Users\\Carl\\runs\\classify\\train10\\weights\\best.pt')
+model = YOLO('C:\\Users\\Carl\\Barong Tagalog Design Classification\\yolov8scls.pt')
 
-test_folder = 'D:\\School Files\\THESIS\\Barong Pictures\\Augment Pics\\Images(PNG)'
+test_folder = 'C:\\Users\\Carl\\Barong Tagalog Design Classification\\Training Files\\MLDataset\\test'
 
 class_names = ['ArtDeco', 'Ethnic', 'Special' , 'Traditional']  
 
