@@ -19,9 +19,19 @@ def init_camera():
     picam2.start()
     return picam2
 
-# Function to resize image to a fixed size
-def resize_image(image, width, height):
-    return cv2.resize(image, (width, height))
+# Function to resize image while maintaining aspect ratio
+def resize_image(image, width=1024, height=800):
+    h, w = image.shape[:2]
+    aspect_ratio = w / h
+    if w > h:
+        new_width = width
+        new_height = int(new_width / aspect_ratio)
+    else:
+        new_height = height
+        new_width = int(new_height * aspect_ratio)
+
+    resized_image = cv2.resize(image, (new_width, new_height))
+    return resized_image
 
 # Function to capture and display the image with user confirmation
 def capture_and_ask_user(picam2):
@@ -33,7 +43,7 @@ def capture_and_ask_user(picam2):
         print("Image captured.")
 
         # Resize the captured image to a manageable size and keep it consistent
-        image_resized = resize_image(image, width=1024, height=800)
+        image_resized = resize_image(image)
 
         # Convert the image to BGR format (Picamera2 captures in RGB)
         image_bgr = image_resized[:, :, ::-1]
@@ -42,7 +52,10 @@ def capture_and_ask_user(picam2):
         cv2.imshow("Captured Image - Press 'y' to keep, 'n' to discard, 'q' to quit", image_bgr)
 
         # Move the window to the center of the screen (optional)
-        cv2.moveWindow("Captured Image - Press 'y' to keep, 'n' to discard, 'q' to quit", 100, 100)
+        screen_width, screen_height = 1920, 1080  # Adjust to your screen size
+        window_x = (screen_width - image_bgr.shape[1]) // 2
+        window_y = (screen_height - image_bgr.shape[0]) // 2
+        cv2.moveWindow("Captured Image - Press 'y' to keep, 'n' to discard, 'q' to quit", window_x, window_y)
 
         key = cv2.waitKey(0) & 0xFF
         if key == 27 or key == ord('q'):  # Esc key or 'q' to quit and discard image
@@ -114,7 +127,10 @@ if __name__ == '__main__':
             cv2.imshow("Classification Result - Press 'c' to capture another image or 'q' to quit", result_image)
 
             # Move the result window to the center
-            cv2.moveWindow("Classification Result - Press 'c' to capture another image or 'q' to quit", 100, 100)
+            screen_width, screen_height = 1920, 1080  # Adjust to your screen size
+            window_x = (screen_width - result_image.shape[1]) // 2
+            window_y = (screen_height - result_image.shape[0]) // 2
+            cv2.moveWindow("Classification Result - Press 'c' to capture another image or 'q' to quit", window_x, window_y)
 
             # Wait for the user to press 'c' or 'q'
             key = cv2.waitKey(0) & 0xFF
