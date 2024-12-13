@@ -109,14 +109,21 @@ if __name__ == '__main__':
         print(f"Predicted Label: {predicted_label}")
         print(f"Confidence: {confidence:.2f}")
 
-        # Ask if the user wants to capture another image or quit
-        print("Press 'c' to capture another image or 'q' to quit.")
-        key = cv2.waitKey(0) & 0xFF  # Wait for key press
+        # Show the classification result
+        result_image = cv2.imread(classified_image_path)
+        cv2.putText(result_image, f"Label: {predicted_label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+        cv2.putText(result_image, f"Confidence: {confidence:.2f}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+        cv2.imshow("Classification Result - Press 'c' to capture another image or 'q' to quit", result_image)
+
+        # Wait for the user to press 'c' or 'q'
+        key = cv2.waitKey(0) & 0xFF
         if key == ord('q'):  # If 'q' is pressed, exit the loop
             print("Exiting program.")
             break
-        elif key != ord('c'):  # If any key other than 'c' or 'q' is pressed, exit
-            break
+        elif key == ord('c'):  # If 'c' is pressed, continue capturing images
+            print("Capturing another image...")
+            cv2.destroyAllWindows()
+            continue
 
     cv2.destroyAllWindows()
     print("Goodbye!")
