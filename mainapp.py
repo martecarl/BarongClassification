@@ -41,6 +41,9 @@ def capture_and_ask_user(picam2):
         # Display the captured image for the user to decide
         cv2.imshow("Captured Image - Press 'y' to keep, 'n' to discard, 'q' to quit", image_bgr)
 
+        # Move the window to the center of the screen (optional)
+        cv2.moveWindow("Captured Image - Press 'y' to keep, 'n' to discard, 'q' to quit", 100, 100)
+
         key = cv2.waitKey(0) & 0xFF
         if key == 27 or key == ord('q'):  # Esc key or 'q' to quit and discard image
             print("Exiting without capturing.")
@@ -109,6 +112,9 @@ if __name__ == '__main__':
             cv2.putText(result_image, f"Label: {predicted_label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
             cv2.putText(result_image, f"Confidence: {confidence:.2f}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
             cv2.imshow("Classification Result - Press 'c' to capture another image or 'q' to quit", result_image)
+
+            # Move the result window to the center
+            cv2.moveWindow("Classification Result - Press 'c' to capture another image or 'q' to quit", 100, 100)
 
             # Wait for the user to press 'c' or 'q'
             key = cv2.waitKey(0) & 0xFF
