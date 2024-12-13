@@ -1,6 +1,7 @@
 import os
-import cv2
+from picamera2 import Picamera2, Preview
 from ultralytics import YOLO  # For .pt model
+import numpy as np
 
 # Path to your YOLOv8 .pt model
 MODEL_PATH = '/home/carl/BarongClassification/yolov8n-cls.pt'
@@ -15,43 +16,37 @@ class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 classified_images_dir = "/home/carl/classified_images"
 os.makedirs(classified_images_dir, exist_ok=True)
 
+# Initialize Picamera2
+def init_camera():
+    picam2 = Picamera2()
+    picam2.configure(picam2.create_still_configuration())  # Set up for still image capture
+    picam2.start()  # Start the camera
+    return picam2
+
 # Function to capture image and handle user decision
-def capture_and_ask_user():
-    cap = cv2.VideoCapture(0)  # Open the default camera
-    if not cap.isOpened():
-        print("Error: Could not open the camera.")
-        return None
-
-    print("Capture image process started. Press 'Spacebar' to capture an image or 'Esc' to exit.")
-    image_path = "/home/carl/captured_image.jpg"
-
+def capture_and_ask_user(picam2):
     # Capture an image
-    ret, frame = cap.read()
-    if not ret:
-        print("Failed to grab frame from the camera.")
-        cap.release()
-        return None
+    image = picam2.capture_array()  # Capture the image as a NumPy array
+    print("Image captured.")
 
-    # Display captured image for user to decide
-    cv2.imshow("Captured Image - Press 'y' to keep, 'n' to discard", frame)
+    # Convert the image to BGR format (Picamera2 captures in RGB)
+    image_bgr = image[:, :, ::-1]
+
+    # Display the captured image for the user to decide
+    cv2.imshow("Captured Image - Press 'y' to keep, 'n' to discard", image_bgr)
 
     key = cv2.waitKey(0) & 0xFF
     if key == 27:  # Esc key to exit
         print("Exiting without capturing.")
-        cap.release()
-        cv2.destroyAllWindows()
         return None
     elif key == ord('y'):  # 'y' to keep the image
         print("Image kept for classification.")
         # Save the image
-        cv2.imwrite(image_path, frame)
-        cap.release()
-        cv2.destroyAllWindows()
+        image_path = "/home/carl/captured_image.jpg"
+        cv2.imwrite(image_path, image_bgr)
         return image_path
     elif key == ord('n'):  # 'n' to discard the image
         print("Image discarded. Capturing a new image.")
-        cap.release()
-        cv2.destroyAllWindows()
         return None
 
 # Function to rename the image and prepare for classification
@@ -81,8 +76,9 @@ def predict(image_path):
 # Main script
 if __name__ == '__main__':
     print("Starting Barong Design Classification...")
+    picam2 = init_camera()  # Initialize Picamera2
     while True:
-        image_path = capture_and_ask_user()
+        image_path = capture_and_ask_user(picam2)
         if image_path is None:
             print("No image captured. Exiting...")
             break
