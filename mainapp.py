@@ -1,4 +1,4 @@
-from picamera2 import Picamera2
+from picamera2 import Picamera2, Preview
 from ultralytics import YOLO  # For .pt model
 from PIL import Image
 import numpy as np
@@ -16,7 +16,9 @@ class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 # Initialize the Picamera2
 def init_camera():
     picam2 = Picamera2()
-    picam2.start()
+    picam2.configure(picam2.create_preview_configuration())  # Set up live preview
+    picam2.start_preview(Preview.QTGL)  # Use OpenGL for preview window (might require QT)
+    picam2.start()  # Start the camera
     return picam2
 
 # Capture image with live preview using Picamera2
