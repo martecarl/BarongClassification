@@ -1,5 +1,7 @@
 import cv2
 import time
+import os
+import subprocess
 from ultralytics import YOLO  # For .pt model
 
 # Path to your YOLOv8 .pt model
@@ -14,42 +16,17 @@ class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 # Camera capture and preview using OpenCV
 
 def capture_image_with_preview():
-    # Open the camera using OpenCV
-    cap = cv2.VideoCapturecap('libcamerasrc ! videoconvert ! appsink', cv2.CAP_GSTREAMER)
-  # 0 is the default camera index
-    if not cap.isOpened():
-        print("Error: Unable to access the camera.")
+    image_path = "/home/carl/captured_image.jpg"
+    print("Launching camera preview... Press Ctrl+C to capture the image and exit preview.")
+    
+    try:
+        # Launch libcamera-apps preview and capture
+        subprocess.run(["libcamera-jpeg", "-o", image_path, "--preview", "0,0,1280,720", "-n"], check=True)
+        print(f"Image captured and saved at {image_path}")
+        return image_path
+    except subprocess.CalledProcessError as e:
+        print(f"Error capturing image: {e}")
         return None
-
-    print("Press 's' to capture an image or 'q' to quit.")
-    image_path = None
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("Error: Failed to grab frame from the camera.")
-            break
-
-        # Display the live preview
-        cv2.imshow("Live Preview", frame)
-
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('s'):
-            # Save the captured frame as an image
-            timestamp = int(time.time())
-            image_path = f'captured_image_{timestamp}.jpg'
-            cv2.imwrite(image_path, frame)
-            print(f"Image saved as {image_path}")
-            break
-        elif key == ord('q'):
-            print("Exiting without capturing.")
-            break
-
-    # Release the camera and close OpenCV windows
-    cap.release()
-    cv2.destroyAllWindows()
-
-    return image_path
 
 # Predict with the model
 def predict(image_path):
