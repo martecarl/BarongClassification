@@ -20,14 +20,14 @@ def init_camera():
     return picam2
 
 # Function to resize image while maintaining aspect ratio
-def resize_image(image, width=1024, height=800):
+def resize_image(image, max_width=1024, max_height=800):
     h, w = image.shape[:2]
     aspect_ratio = w / h
     if w > h:
-        new_width = width
+        new_width = max_width
         new_height = int(new_width / aspect_ratio)
     else:
-        new_height = height
+        new_height = max_height
         new_width = int(new_height * aspect_ratio)
 
     resized_image = cv2.resize(image, (new_width, new_height))
@@ -133,14 +133,16 @@ if __name__ == '__main__':
             cv2.moveWindow("Classification Result - Press 'c' to capture another image or 'q' to quit", window_x, window_y)
 
             # Wait for the user to press 'c' or 'q'
-            key = cv2.waitKey(0) & 0xFF
-            if key == ord('q'):  # If 'q' is pressed, exit the loop
-                print("Exiting program.")
-                break
-            elif key == ord('c'):  # If 'c' is pressed, continue capturing images
-                print("Capturing another image...")
-                cv2.destroyAllWindows()
-                continue
+            while True:
+                key = cv2.waitKey(0) & 0xFF
+                if key == ord('q'):  # If 'q' is pressed, exit the loop
+                    print("Exiting program.")
+                    cv2.destroyAllWindows()
+                    break
+                elif key == ord('c'):  # If 'c' is pressed, continue capturing images
+                    print("Capturing another image...")
+                    cv2.destroyAllWindows()
+                    break
         elif key == ord('n'):
             print("Image discarded. Capturing a new image...")
             cv2.destroyAllWindows()
