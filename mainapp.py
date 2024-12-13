@@ -1,8 +1,7 @@
 import os
-import cv2
 from picamera2 import Picamera2, Preview
+import cv2
 from ultralytics import YOLO  # For .pt model
-import numpy as np
 
 # Path to your YOLOv8 .pt model
 MODEL_PATH = '/home/carl/BarongClassification/yolov8n-cls.pt'
@@ -24,14 +23,29 @@ def init_camera():
     picam2.start()  # Start the camera
     return picam2
 
+# Resize image to a manageable size
+def resize_image(image, width=1024, height=800):
+    # Resize image maintaining the aspect ratio
+    aspect_ratio = float(image.shape[1]) / float(image.shape[0])
+    new_width = width
+    new_height = int(width / aspect_ratio)
+    if new_height > height:
+        new_height = height
+        new_width = int(height * aspect_ratio)
+    resized_image = cv2.resize(image, (new_width, new_height))
+    return resized_image
+
 # Function to capture image and handle user decision
 def capture_and_ask_user(picam2):
     # Capture an image
     image = picam2.capture_array()  # Capture the image as a NumPy array
     print("Image captured.")
 
+    # Resize the captured image to a manageable size
+    image_resized = resize_image(image, width=1024, height=800)
+
     # Convert the image to BGR format (Picamera2 captures in RGB)
-    image_bgr = image[:, :, ::-1]
+    image_bgr = image_resized[:, :, ::-1]
 
     # Display the captured image for the user to decide
     cv2.imshow("Captured Image - Press 'y' to keep, 'n' to discard", image_bgr)
@@ -39,15 +53,18 @@ def capture_and_ask_user(picam2):
     key = cv2.waitKey(0) & 0xFF
     if key == 27:  # Esc key to exit
         print("Exiting without capturing.")
+        cv2.destroyAllWindows()
         return None
     elif key == ord('y'):  # 'y' to keep the image
         print("Image kept for classification.")
         # Save the image
         image_path = "/home/carl/captured_image.jpg"
         cv2.imwrite(image_path, image_bgr)
+        cv2.destroyAllWindows()
         return image_path
     elif key == ord('n'):  # 'n' to discard the image
         print("Image discarded. Capturing a new image.")
+        cv2.destroyAllWindows()
         return None
 
 # Function to rename the image and prepare for classification
@@ -81,8 +98,8 @@ if __name__ == '__main__':
     while True:
         image_path = capture_and_ask_user(picam2)
         if image_path is None:
-            print("No image captured. Exiting...")
-            break
+            print("No image captured. Continuing to capture new image...")
+            continue  # Continue the loop to capture a new image
 
         # Rename the image if it is chosen for classification
         classified_image_path = rename_and_save_image(image_path)
