@@ -3,20 +3,20 @@ import albumentations as A
 import os
 
 input_dirs = {
-    'art': './Images(PNG)/ArtDeco/',
-    'eth': './Images(PNG)/Ethnic/',
-    'spec': './Images(PNG)/Special/',
-    'trad': './Images(PNG)/Traditional/'
+    'art': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/ArtDeco',
+    'eth': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Ethnic',
+    'spec': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Special',
+    'trad': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Traditional'
 }
 
 output_dirs = {
-    'affine': './Augment_affine',
-    'channels': './Augment_channels',
-    'color': './Augment_color',
-    'distort': './Augment_distort',
-    'geometric': './Augment_geometric',
-    'perspective': './Augment_perspective',
-    'shadows': './Augment_shadows'
+    'affine': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Augment_affine',
+    'channels': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Augment_channels',
+    'color': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Augment_color',
+    'distort': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Augment_distort',
+    'geometric': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Augment_geometric',
+    'perspective': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Augment_perspective',
+    'shadows': 'D:/School Files/THESIS/Barong Pictures/OriginalPNG/Augment_shadows'
 }
 
 transforms = {

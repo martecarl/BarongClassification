@@ -3,7 +3,7 @@ from picamera2 import Picamera2
 from ultralytics import YOLO  # For .pt model
 
 # Path to your YOLOv8 .pt model
-MODEL_PATH = '/home/carl/BarongClassification/yolov8n-cls.pt'
+MODEL_PATH = '/home/carl/BarongClassification/article1model.pt'
 
 # Load the YOLOv8 model
 model = YOLO(MODEL_PATH)
@@ -29,7 +29,7 @@ def capture_and_ask_user(picam2):
     print("Image captured.")
 
     # Resize the captured image to a manageable size
-    image_resized = resize_image(image, width=1024, height=800)
+    image_resized = resize_image(image, width=640, height=640)
 
     # Convert the image to BGR format (Picamera2 captures in RGB)
     image_bgr = image_resized[:, :, ::-1]
