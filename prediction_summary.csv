@@ -1,0 +1,102 @@
+Image Path,Confidence,True Label,Predicted Label,Correct,,,,,,
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\affine_art_artdeco_15.png,tensor(0.4360),ArtDeco,ArtDeco,1,,,,,,
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_12.png,tensor(0.9999),ArtDeco,ArtDeco,1,,,,,,
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_23.png,tensor(1.0000),ArtDeco,ArtDeco,1,,,,,,
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_27.png,tensor(0.9999),ArtDeco,ArtDeco,1,,,,,,
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_3.jpg,tensor(0.9973),ArtDeco,ArtDeco,1,,,Sample,Actual Value,Predicted Value,Confidence Score
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_32.png,tensor(1.0000),ArtDeco,ArtDeco,1,,,1,Art Deco,Art Deco,0.4360
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_36.png,tensor(0.8240),ArtDeco,ArtDeco,1,,,2,Art Deco,Art Deco,0.9999
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_38.png,tensor(0.9701),ArtDeco,ArtDeco,1,,,3,Art Deco,Art Deco,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_4.jpg,tensor(0.9995),ArtDeco,ArtDeco,1,,,4,Art Deco,Art Deco,0.9999
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_5.jpg,tensor(0.9938),ArtDeco,ArtDeco,1,,,5,Art Deco,Art Deco,0.9973
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_6.jpg,tensor(0.9985),ArtDeco,ArtDeco,1,,,6,Art Deco,Art Deco,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_7.jpg,tensor(0.9641),ArtDeco,ArtDeco,1,,,7,Art Deco,Art Deco,0.8240
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\artdeco_8.jpg,tensor(0.9989),ArtDeco,ArtDeco,1,,,8,Art Deco,Art Deco,0.9701
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\color_art_artdeco_19.png,tensor(0.7633),ArtDeco,Traditional,0,,,9,Art Deco,Art Deco,0.9995
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\distort_art_artdeco_13.png,tensor(0.9942),ArtDeco,ArtDeco,1,,,10,Art Deco,Art Deco,0.9938
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\distort_art_artdeco_18.png,tensor(0.9440),ArtDeco,ArtDeco,1,,,11,Art Deco,Art Deco,0.9985
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\geometric_art_artdeco_18.png,tensor(0.8280),ArtDeco,ArtDeco,1,,,12,Art Deco,Art Deco,0.9641
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\perspective_art_artdeco_001.png,tensor(0.7491),ArtDeco,ArtDeco,1,,,13,Art Deco,Art Deco,0.9989
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\perspective_art_artdeco_002.png,tensor(0.9704),ArtDeco,Traditional,0,,,14,Art Deco,Traditional,0.7633
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\perspective_art_artdeco_13.png,tensor(0.9957),ArtDeco,ArtDeco,1,,,15,Art Deco,Art Deco,0.9942
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\perspective_art_artdeco_15.png,tensor(0.4349),ArtDeco,ArtDeco,1,,,16,Art Deco,Art Deco,0.9440
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\perspective_art_artdeco_7.png,tensor(1.0000),ArtDeco,Traditional,0,,,17,Art Deco,Art Deco,0.8280
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\perspective_art_artdeco_9.png,tensor(0.9798),ArtDeco,Traditional,0,,,18,Art Deco,Art Deco,0.7491
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\ArtDeco\shadows_art_artdeco_005.png,tensor(0.5342),ArtDeco,Special,0,,,19,Art Deco,Traditional,0.9704
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\affine_eth_ethnic_2.png,tensor(0.9808),Ethnic,Ethnic,1,,,20,Art Deco,Art Deco,0.9957
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\affine_eth_ethnic_5.png,tensor(0.9311),Ethnic,Special,0,,,21,Art Deco,Art Deco,0.4349
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\affine_eth_ethnic_8.png,tensor(0.9873),Ethnic,Ethnic,1,,,22,Art Deco,Traditional,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\channels_eth_ethnic_3.png,tensor(0.8316),Ethnic,Ethnic,1,,,23,Art Deco,Traditional,0.9798
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\color_eth_ethnic_2.png,tensor(0.9808),Ethnic,Ethnic,1,,,24,Art Deco,Special,0.5342
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\color_eth_ethnic_5.png,tensor(0.9289),Ethnic,Special,0,,,25,Ethnic,Ethnic,0.9808
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\color_eth_ethnic_7.png,tensor(0.9094),Ethnic,Special,0,,,26,Ethnic,Special,0.9311
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\distort_eth_ethnic_9.png,tensor(0.9264),Ethnic,Special,0,,,27,Ethnic,Ethnic,0.9873
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\ethnic_004.png,tensor(1.0000),Ethnic,Ethnic,1,,,28,Ethnic,Ethnic,0.8316
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\ethnic_006.png,tensor(0.9999),Ethnic,Ethnic,1,,,29,Ethnic,Ethnic,0.9808
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\ethnic_1.jpg,tensor(0.9913),Ethnic,Ethnic,1,,,30,Ethnic,Special,0.9289
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\ethnic_1.png,tensor(1.0000),Ethnic,Ethnic,1,,,31,Ethnic,Special,0.9094
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\ethnic_2.jpg,tensor(0.4279),Ethnic,Ethnic,1,,,32,Ethnic,Special,0.9264
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\ethnic_2.png,tensor(1.0000),Ethnic,Ethnic,1,,,33,Ethnic,Ethnic,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\ethnic_4.png,tensor(0.8164),Ethnic,Ethnic,1,,,34,Ethnic,Ethnic,0.9999
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\geometric_eth_ethnic_2.png,tensor(0.8558),Ethnic,Ethnic,1,,,35,Ethnic,Ethnic,0.9913
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\geometric_eth_ethnic_7.png,tensor(0.9256),Ethnic,Special,0,,,36,Ethnic,Ethnic,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\geometric_eth_ethnic_9.png,tensor(0.9264),Ethnic,Special,0,,,37,Ethnic,Ethnic,0.4279
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\perspective_eth_ethnic_4.png,tensor(0.8164),Ethnic,Ethnic,1,,,38,Ethnic,Ethnic,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\perspective_eth_ethnic_6.png,tensor(0.6934),Ethnic,Ethnic,1,,,39,Ethnic,Ethnic,0.8164
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\shadows_eth_ethnic_2.png,tensor(0.9808),Ethnic,Ethnic,1,,,40,Ethnic,Ethnic,0.8558
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\shadows_eth_ethnic_4.png,tensor(0.6836),Ethnic,Ethnic,1,,,41,Ethnic,Special,0.9256
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\shadows_eth_ethnic_6.png,tensor(0.6934),Ethnic,Ethnic,1,,,42,Ethnic,Special,0.9264
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Ethnic\shadows_eth_ethnic_9.png,tensor(0.9264),Ethnic,Special,0,,,43,Ethnic,Ethnic,0.8164
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\affine_spec_special_6.png,tensor(0.9976),Special,Special,1,,,44,Ethnic,Ethnic,0.6934
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\channels_spec_special_10.png,tensor(0.9867),Special,Special,1,,,45,Ethnic,Ethnic,0.9808
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\channels_spec_special_3.png,tensor(0.9724),Special,Special,1,,,46,Ethnic,Ethnic,0.6836
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\channels_spec_special_4.png,tensor(0.9958),Special,Special,1,,,47,Ethnic,Ethnic,0.6934
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\channels_spec_special_7.png,tensor(0.9991),Special,Special,1,,,48,Ethnic,Special,0.9264
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\color_spec_special_14.png,tensor(0.9990),Special,Special,1,,,49,Special,Special,0.9976
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\distort_spec_special_1.png,tensor(0.9965),Special,Special,1,,,50,Special,Special,0.9867
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\distort_spec_special_4.png,tensor(0.9958),Special,Special,1,,,51,Special,Special,0.9724
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\geometric_spec_special_15.png,tensor(0.9818),Special,Special,1,,,52,Special,Special,0.9958
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\net_special_1.jpg,tensor(0.9801),Special,Special,1,,,53,Special,Special,0.9991
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\perspective_spec_special_12.png,tensor(0.9817),Special,Special,1,,,54,Special,Special,0.9990
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\perspective_spec_special_5.png,tensor(0.9801),Special,Special,1,,,55,Special,Special,0.9965
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\perspective_spec_special_9.png,tensor(0.9566),Special,Special,1,,,56,Special,Special,0.9958
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\shadows_spec_special_11.png,tensor(0.9875),Special,Special,1,,,57,Special,Special,0.9818
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\shadows_spec_special_14.png,tensor(0.9990),Special,Special,1,,,58,Special,Special,0.9801
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_1.jpg,tensor(0.9789),Special,Special,1,,,59,Special,Special,0.9817
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_1.png,tensor(0.9966),Special,Special,1,,,60,Special,Special,0.9801
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_12.png,tensor(0.9250),Special,Special,1,,,61,Special,Special,0.9566
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_13.png,tensor(0.9760),Special,Special,1,,,62,Special,Special,0.9875
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_2.jpg,tensor(0.9990),Special,Special,1,,,63,Special,Special,0.9990
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_2.png,tensor(1.0000),Special,Special,1,,,64,Special,Special,0.9789
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_3.jpg,tensor(0.9996),Special,Special,1,,,65,Special,Special,0.9966
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_4.jpg,tensor(0.9997),Special,Special,1,,,66,Special,Special,0.9250
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Special\special_7.png,tensor(1.0000),Special,Special,1,,,67,Special,Special,0.9760
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\affine_trad_trad_008.png,tensor(0.8520),Traditional,Traditional,1,,,68,Special,Special,0.9990
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\channels_trad_trad_019.png,tensor(0.9865),Traditional,Traditional,1,,,69,Special,Special,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\color_trad_trad_016.png,tensor(0.7950),Traditional,Traditional,1,,,70,Special,Special,0.9996
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\distort_trad_trad_013.png,tensor(0.7338),Traditional,Special,0,,,71,Special,Special,0.9997
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\geometric_trad_trad_019.png,tensor(0.9909),Traditional,Traditional,1,,,72,Special,Special,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\perspective_trad_trad_016.png,tensor(0.9034),Traditional,Traditional,1,,,73,Traditional,Traditional,0.8520
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\perspective_trad_trad_020.png,tensor(0.9147),Traditional,Traditional,1,,,74,Traditional,Traditional,0.9865
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\perspective_trad_trad_6.png,tensor(0.6669),Traditional,Special,0,,,75,Traditional,Traditional,0.7950
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\shadows_trad_trad_017.png,tensor(0.7143),Traditional,Traditional,1,,,76,Traditional,Special,0.7338
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\shadows_trad_trad_021.png,tensor(0.9937),Traditional,Traditional,1,,,77,Traditional,Traditional,0.9909
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\traditional_1.jpg,tensor(0.9675),Traditional,Traditional,1,,,78,Traditional,Traditional,0.9034
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\traditional_2.jpg,tensor(1.0000),Traditional,Traditional,1,,,79,Traditional,Traditional,0.9147
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\traditional_3.jpg,tensor(0.9998),Traditional,Traditional,1,,,80,Traditional,Special,0.6669
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\traditional_4.jpg,tensor(0.7454),Traditional,Traditional,1,,,81,Traditional,Traditional,0.7143
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\traditional_5.jpg,tensor(1.0000),Traditional,Traditional,1,,,82,Traditional,Traditional,0.9937
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\traditional_6.jpg,tensor(0.8137),Traditional,Traditional,1,,,83,Traditional,Traditional,0.9675
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\traditional_7.jpg,tensor(0.9275),Traditional,Traditional,1,,,84,Traditional,Traditional,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\trad_012.png,tensor(0.4636),Traditional,Special,0,,,85,Traditional,Traditional,0.9998
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\trad_17.png,tensor(0.8949),Traditional,Traditional,1,,,86,Traditional,Traditional,0.7454
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\trad_19.png,tensor(0.9972),Traditional,Traditional,1,,,87,Traditional,Traditional,1.0000
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\trad_27.png,tensor(0.9983),Traditional,Traditional,1,,,88,Traditional,Traditional,0.8137
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\trad_5.png,tensor(1.0000),Traditional,Traditional,1,,,89,Traditional,Traditional,0.9275
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\trad_8.png,tensor(1.0000),Traditional,Traditional,1,,,90,Traditional,Special,0.4636
+D:\School Files\THESIS\Barong Pictures\OriginalPNG\test\Traditional\trad_9.png,tensor(1.0000),Traditional,Traditional,1,,,91,Traditional,Traditional,0.8949
+,,,,,,,92,Traditional,Traditional,0.9972
+,,,,,,,93,Traditional,Traditional,0.9983
+,,,,,,,94,Traditional,Traditional,1.0000
+,,,,,,,95,Traditional,Traditional,1.0000
+,,,,,,,96,Traditional,Traditional,1.0000

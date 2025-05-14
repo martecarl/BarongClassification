@@ -10,6 +10,7 @@
 # Exclude specific directories (e.g., MLDataset folder)
 TrainingFiles/AugDataset
 TrainingFiles/MLDataset
+TrainingFiles/Images(PNG)
 
 
 # Exclude Python cache files and folders
