@@ -1,7 +1,6 @@
 import os
 import time
 import cv2
-import threading
 import numpy as np
 from picamera2 import Picamera2
 from ultralytics import YOLO
@@ -26,19 +25,18 @@ def init_camera():
     picam2.start()
     return picam2
 
-# Pad image with black borders to center it
+# Center the image in a black canvas
 def center_image_on_canvas(image, canvas_width, canvas_height):
     h, w = image.shape[:2]
     top = (canvas_height - h) // 2
     bottom = canvas_height - h - top
     left = (canvas_width - w) // 2
     right = canvas_width - w - left
-    color = [0, 0, 0]
-    return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
+    return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
 
-# Capture image and ask user if they want to keep it
+# Capture and decide
 def capture_and_ask_user(picam2):
-    window_name = "Captured Image - Press 'y' to keep, 'n' to quit, any key to retake"
+    window_name = "Captured Image - Press 'y' to keep, 'p' to retake"
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.moveWindow(window_name, 0, 0)
@@ -50,21 +48,21 @@ def capture_and_ask_user(picam2):
         image_display = center_image_on_canvas(image_resized, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         cv2.imshow(window_name, image_display)
-        cv2.waitKey(1)  # Ensure window gets focus
+        cv2.waitKey(1)
 
         key = cv2.waitKey(0) & 0xFF
         if key == ord('y'):
             print("Image accepted. Saving and classifying...")
             cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
             return TEMP_IMAGE_PATH
-        elif key == ord('n'):
-            print("User chose to quit.")
-            return 'quit'
-        else:
+        elif key == ord('p'):
             print("Retaking image...")
-            continue  # Retain window without flickering
+            continue
+        else:
+            print("Invalid key. Press 'y' to keep or 'p' to retake.")
+            continue
 
-# Rename image as classify_#.jpg
+# Save with incremental filename
 def rename_and_save_image(image_path):
     os.makedirs(CLASSIFIED_DIR, exist_ok=True)
     count = len([f for f in os.listdir(CLASSIFIED_DIR) if f.startswith('classify_')])
@@ -73,14 +71,14 @@ def rename_and_save_image(image_path):
     print(f"Image saved as {new_path}")
     return new_path
 
-# Run YOLOv8 model and get label + confidence
+# Predict using YOLOv8
 def predict(image_path):
     results = model.predict(image_path)
     class_id = results[0].probs.top1
     confidence = results[0].probs.top1conf
     return class_names[class_id], confidence
 
-# Show result fullscreen and wait for user to press 'c'
+# Show result and wait for 'c'
 def show_classification_result(image_path, label, confidence):
     image = cv2.imread(image_path)
     cv2.putText(image, f"Label: {label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -93,7 +91,7 @@ def show_classification_result(image_path, label, confidence):
     cv2.setWindowProperty(result_window, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.imshow(result_window, image_display)
     cv2.moveWindow(result_window, 0, 0)
-    cv2.waitKey(1)  # Force window focus
+    cv2.waitKey(1)
 
     print("Press 'c' to capture another image.")
 
@@ -111,15 +109,10 @@ if __name__ == '__main__':
     print("Starting Barong Tagalog Design Classification...")
     picam2 = init_camera()
 
-    capture_window = None
     while True:
         image_path = capture_and_ask_user(picam2)
-        if image_path == 'quit':
-            print("Exiting program.")
-            break
-
         if image_path is None:
-            print("No image selected. Exiting...")
+            print("Exiting program.")
             break
 
         classified_path = rename_and_save_image(image_path)
@@ -127,8 +120,6 @@ if __name__ == '__main__':
         print(f"Predicted: {label}, Confidence: {confidence:.2f}")
 
         show_classification_result(classified_path, label, confidence)
-
-        # Let OpenCV settle before re-looping
         cv2.waitKey(1)
 
     cv2.destroyAllWindows()
