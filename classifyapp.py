@@ -10,7 +10,7 @@ MODEL_PATH = '/home/carl/BarongClassification/article1model.pt'
 CLASSIFIED_DIR = '/home/carl/BarongClassification/classified_images'
 TEMP_IMAGE_PATH = '/home/carl/captured_image.jpg'
 
-# Screen resolution (adjust if needed)
+# Screen resolution
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 
@@ -18,30 +18,27 @@ SCREEN_HEIGHT = 720
 model = YOLO(MODEL_PATH)
 class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
-# Initialize Picamera2
 def init_camera():
     picam2 = Picamera2()
     picam2.configure(picam2.create_still_configuration())
     picam2.start()
     return picam2
 
-# Resize and center image on canvas
 def center_image_on_canvas(image, canvas_width, canvas_height):
     h, w = image.shape[:2]
     top = (canvas_height - h) // 2
     bottom = canvas_height - h - top
     left = (canvas_width - w) // 2
     right = canvas_width - w - left
-    color = [0, 0, 0]  # black padding
+    color = [0, 0, 0]
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
 
-# Capture and handle image
 def capture_and_ask_user(picam2):
     window_name = "Captured Image - Press 'y' to keep, 'n' to discard, 'esc' to exit"
     while True:
         image = picam2.capture_array()
         print("Image captured.")
-        image_resized = cv2.resize(image, (640, 640))[:, :, ::-1]  # Convert to BGR
+        image_resized = cv2.resize(image, (640, 640))[:, :, ::-1]
         image_display = center_image_on_canvas(image_resized, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
@@ -53,24 +50,20 @@ def capture_and_ask_user(picam2):
         if key == 27:  # ESC
             print("Exiting capture loop.")
             cv2.destroyAllWindows()
-            return None
+            return None, None
         elif key == ord('y'):
-            print("Image accepted. Saving...")
+            print("Image accepted. Saving and classifying immediately...")
             cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
-            print("Waiting 5 seconds before moving to classification...")
-            cv2.waitKey(5000)  # Wait 5 seconds without closing window
-            cv2.destroyWindow(window_name)
-            return TEMP_IMAGE_PATH
+            return TEMP_IMAGE_PATH, window_name  # Also return capture window name
         elif key == ord('n'):
             print("Image discarded.")
             cv2.destroyWindow(window_name)
             continue
         else:
             print("Invalid key. Retaking image...")
-            # Keep window open — do not destroy
+            # Keep window open
             continue
 
-# Rename and store image
 def rename_and_save_image(image_path):
     os.makedirs(CLASSIFIED_DIR, exist_ok=True)
     count = len([f for f in os.listdir(CLASSIFIED_DIR) if f.startswith('classify_')])
@@ -79,14 +72,12 @@ def rename_and_save_image(image_path):
     print(f"Image saved as {new_path}")
     return new_path
 
-# Predict class and confidence
 def predict(image_path):
     results = model.predict(image_path)
     class_id = results[0].probs.top1
     confidence = results[0].probs.top1conf
     return class_names[class_id], confidence
 
-# Show classification result
 def show_classification_result(image_path, label, confidence):
     image = cv2.imread(image_path)
     cv2.putText(image, f"Label: {label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -101,32 +92,45 @@ def show_classification_result(image_path, label, confidence):
     cv2.moveWindow(result_window, 0, 0)
 
     print("Press 'c' to capture another image or 'q' to quit.")
-
     while True:
         key = cv2.waitKey(0) & 0xFF
         if key == ord('q'):
             print("Quitting program.")
             cv2.destroyAllWindows()
-            exit()
+            return 'quit'
         elif key == ord('c'):
             print("Continuing to capture...")
             cv2.destroyWindow(result_window)
-            break
+            return 'continue'
         else:
             print("Invalid key. Press 'c' or 'q'.")
 
-# Main execution
 if __name__ == '__main__':
     print("Starting Barong Tagalog Design Classification...")
     picam2 = init_camera()
 
     while True:
-        image_path = capture_and_ask_user(picam2)
+        image_path, capture_window = capture_and_ask_user(picam2)
         if image_path is None:
             print("No image selected. Exiting...")
             break
 
+        # Immediately classify
         classified_path = rename_and_save_image(image_path)
         label, confidence = predict(classified_path)
         print(f"Predicted: {label}, Confidence: {confidence:.2f}")
-        show_classification_result(classified_path, label, confidence)
+
+        # Show classification result now
+        result = show_classification_result(classified_path, label, confidence)
+
+        # Wait 5 seconds before closing the previous capture window (if still open)
+        if capture_window:
+            print("Waiting 5 seconds before hiding capture window...")
+            time.sleep(5)
+            try:
+                cv2.destroyWindow(capture_window)
+            except:
+                pass  # Already closed
+
+        if result == 'quit':
+            break
