@@ -34,7 +34,7 @@ def center_image_on_canvas(image, canvas_width, canvas_height):
     right = canvas_width - w - left
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
 
-# Capture and decide
+# Capture and handle user decision
 def capture_and_ask_user(picam2):
     window_name = "Captured Image - Press 'y' to keep, 'p' to retake"
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
@@ -46,21 +46,22 @@ def capture_and_ask_user(picam2):
         print("Image captured.")
         image_resized = cv2.resize(image, (640, 640))[:, :, ::-1]
         image_display = center_image_on_canvas(image_resized, SCREEN_WIDTH, SCREEN_HEIGHT)
-
         cv2.imshow(window_name, image_display)
         cv2.waitKey(1)
 
-        key = cv2.waitKey(0) & 0xFF
-        if key == ord('y'):
-            print("Image accepted. Saving and classifying...")
-            cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
-            return TEMP_IMAGE_PATH
-        elif key == ord('p'):
-            print("Retaking image...")
-            continue
-        else:
-            print("Invalid key. Press 'y' to keep or 'p' to retake.")
-            continue
+        while True:
+            key = cv2.waitKey(0) & 0xFF
+            if key == ord('y'):
+                print("Image accepted. Saving...")
+                cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
+                cv2.destroyWindow(window_name)
+                return TEMP_IMAGE_PATH
+            elif key == ord('p'):
+                print("Retaking image...")
+                break  # go back to outer loop to capture again
+            else:
+                print("Only 'y' to keep, or 'p' to retake.")
+                continue
 
 # Save with incremental filename
 def rename_and_save_image(image_path):
@@ -120,6 +121,5 @@ if __name__ == '__main__':
         print(f"Predicted: {label}, Confidence: {confidence:.2f}")
 
         show_classification_result(classified_path, label, confidence)
-        cv2.waitKey(1)
 
     cv2.destroyAllWindows()
