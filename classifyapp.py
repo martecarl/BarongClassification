@@ -25,7 +25,7 @@ def init_camera():
     picam2.start()
     return picam2
 
-# Add padding to center image
+# Pad image to center
 def center_image_on_canvas(image, canvas_width, canvas_height):
     h, w = image.shape[:2]
     top = (canvas_height - h) // 2
@@ -34,7 +34,7 @@ def center_image_on_canvas(image, canvas_width, canvas_height):
     right = canvas_width - w - left
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
 
-# Take image and wait for 'y' or 'p'
+# Capture and handle 'y' or 'p' smoothly
 def capture_and_ask_user(picam2):
     window_name = "Captured Image - Press 'y' to keep, 'p' to retake"
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
@@ -51,16 +51,16 @@ def capture_and_ask_user(picam2):
         while True:
             key = cv2.waitKey(0) & 0xFF
             if key == ord('y'):
-                print("Image accepted. Saving and classifying...")
+                print("Image accepted.")
                 cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
                 return TEMP_IMAGE_PATH, window_name
             elif key == ord('p'):
                 print("Retaking image...")
-                break
+                break  # Go back to outer loop to capture again
             else:
-                print("Only 'y' to keep, or 'p' to retake.")
+                print("Only 'y' or 'p' allowed.")
 
-# Save image to classified folder with numbered name
+# Save image with new numbered filename
 def rename_and_save_image(image_path):
     os.makedirs(CLASSIFIED_DIR, exist_ok=True)
     count = len([f for f in os.listdir(CLASSIFIED_DIR) if f.startswith('classify_')])
@@ -68,14 +68,14 @@ def rename_and_save_image(image_path):
     os.rename(image_path, new_path)
     return new_path
 
-# Run YOLO classification
+# Run prediction
 def predict(image_path):
     results = model.predict(image_path)
     class_id = results[0].probs.top1
     confidence = results[0].probs.top1conf
     return class_names[class_id], confidence
 
-# Show classification result
+# Show classification result screen
 def show_classification_result(image_path, label, confidence):
     image = cv2.imread(image_path)
     cv2.putText(image, f"Label: {label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -94,15 +94,15 @@ def show_classification_result(image_path, label, confidence):
     while True:
         key = cv2.waitKey(0) & 0xFF
         if key == ord('c'):
-            print("Continuing...")
+            print("Continuing to next image...")
             cv2.destroyWindow(result_window)
             return
         else:
-            print("Only 'c' is valid.")
+            print("Only 'c' allowed.")
 
-# Main app logic
+# Main loop
 if __name__ == '__main__':
-    print("Launching Barong Tagalog Design Classifier...")
+    print("Launching Barong Classifier...")
     picam2 = init_camera()
 
     while True:
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         label, confidence = predict(image_path)
         classified_path = rename_and_save_image(image_path)
 
-        cv2.destroyWindow(capture_window)  # Destroy capture window *after* classification is ready
+        cv2.destroyWindow(capture_window)  # Only destroy after classification is ready
         show_classification_result(classified_path, label, confidence)
 
     cv2.destroyAllWindows()
