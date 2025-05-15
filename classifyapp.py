@@ -18,12 +18,14 @@ SCREEN_HEIGHT = 720
 model = YOLO(MODEL_PATH)
 class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
+# Initialize camera
 def init_camera():
     picam2 = Picamera2()
     picam2.configure(picam2.create_still_configuration())
     picam2.start()
     return picam2
 
+# Pad image with black borders to center it
 def center_image_on_canvas(image, canvas_width, canvas_height):
     h, w = image.shape[:2]
     top = (canvas_height - h) // 2
@@ -33,6 +35,7 @@ def center_image_on_canvas(image, canvas_width, canvas_height):
     color = [0, 0, 0]
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
 
+# Capture image and ask user if they want to keep it
 def capture_and_ask_user(picam2):
     window_name = "Captured Image - Press 'y' to keep, 'n' to discard, 'esc' to exit"
     while True:
@@ -52,18 +55,19 @@ def capture_and_ask_user(picam2):
             cv2.destroyAllWindows()
             return None, None
         elif key == ord('y'):
-            print("Image accepted. Saving and classifying immediately...")
+            print("Image accepted. Saving and classifying...")
             cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
-            return TEMP_IMAGE_PATH, window_name  # Also return capture window name
+            return TEMP_IMAGE_PATH, window_name  # also return capture window name
         elif key == ord('n'):
             print("Image discarded.")
             cv2.destroyWindow(window_name)
             continue
         else:
             print("Invalid key. Retaking image...")
-            # Keep window open
+            # Do not destroy window, just retake silently
             continue
 
+# Rename image as classify_#.jpg
 def rename_and_save_image(image_path):
     os.makedirs(CLASSIFIED_DIR, exist_ok=True)
     count = len([f for f in os.listdir(CLASSIFIED_DIR) if f.startswith('classify_')])
@@ -72,12 +76,14 @@ def rename_and_save_image(image_path):
     print(f"Image saved as {new_path}")
     return new_path
 
+# Run YOLOv8 model and get label + confidence
 def predict(image_path):
     results = model.predict(image_path)
     class_id = results[0].probs.top1
     confidence = results[0].probs.top1conf
     return class_names[class_id], confidence
 
+# Show result fullscreen and wait for user input
 def show_classification_result(image_path, label, confidence):
     image = cv2.imread(image_path)
     cv2.putText(image, f"Label: {label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -105,6 +111,7 @@ def show_classification_result(image_path, label, confidence):
         else:
             print("Invalid key. Press 'c' or 'q'.")
 
+# Main loop
 if __name__ == '__main__':
     print("Starting Barong Tagalog Design Classification...")
     picam2 = init_camera()
@@ -115,22 +122,21 @@ if __name__ == '__main__':
             print("No image selected. Exiting...")
             break
 
-        # Immediately classify
+        # Rename and classify immediately
         classified_path = rename_and_save_image(image_path)
         label, confidence = predict(classified_path)
         print(f"Predicted: {label}, Confidence: {confidence:.2f}")
 
-        # Show classification result now
+        # Show classification result window
         result = show_classification_result(classified_path, label, confidence)
 
-        # Wait 5 seconds before closing the previous capture window (if still open)
+        # Wait 5 seconds, then destroy the old capture window
+        time.sleep(5)
         if capture_window:
-            print("Waiting 5 seconds before hiding capture window...")
-            time.sleep(5)
             try:
                 cv2.destroyWindow(capture_window)
             except:
-                pass  # Already closed
+                pass
 
         if result == 'quit':
             break
