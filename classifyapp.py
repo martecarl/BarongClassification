@@ -1,6 +1,7 @@
 import os
 import time
 import cv2
+import threading
 import numpy as np
 from picamera2 import Picamera2
 from ultralytics import YOLO
@@ -48,6 +49,7 @@ def capture_and_ask_user(picam2):
         cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow(window_name, image_display)
         cv2.moveWindow(window_name, 0, 0)
+        cv2.waitKey(1)  # Ensure window gets focus
 
         key = cv2.waitKey(0) & 0xFF
         if key == 27:  # ESC
@@ -57,15 +59,14 @@ def capture_and_ask_user(picam2):
         elif key == ord('y'):
             print("Image accepted. Saving and classifying...")
             cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
-            return TEMP_IMAGE_PATH, window_name  # also return capture window name
+            return TEMP_IMAGE_PATH, window_name
         elif key == ord('n'):
             print("Image discarded.")
             cv2.destroyWindow(window_name)
             continue
         else:
             print("Invalid key. Retaking image...")
-            # Do not destroy window, just retake silently
-            continue
+            continue  # Retain window
 
 # Rename image as classify_#.jpg
 def rename_and_save_image(image_path):
@@ -96,6 +97,7 @@ def show_classification_result(image_path, label, confidence):
     cv2.setWindowProperty(result_window, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.imshow(result_window, image_display)
     cv2.moveWindow(result_window, 0, 0)
+    cv2.waitKey(1)  # Flush buffer to ensure window is focused
 
     print("Press 'c' to capture another image or 'q' to quit.")
     while True:
@@ -122,21 +124,24 @@ if __name__ == '__main__':
             print("No image selected. Exiting...")
             break
 
-        # Rename and classify immediately
         classified_path = rename_and_save_image(image_path)
         label, confidence = predict(classified_path)
         print(f"Predicted: {label}, Confidence: {confidence:.2f}")
 
-        # Show classification result window
         result = show_classification_result(classified_path, label, confidence)
 
-        # Wait 5 seconds, then destroy the old capture window
-        time.sleep(5)
+        # Destroy the capture window 5 seconds after result is displayed
         if capture_window:
-            try:
-                cv2.destroyWindow(capture_window)
-            except:
-                pass
+            def delayed_destroy():
+                time.sleep(5)
+                try:
+                    cv2.destroyWindow(capture_window)
+                except:
+                    pass
+            threading.Thread(target=delayed_destroy, daemon=True).start()
 
         if result == 'quit':
             break
+
+        # Let the UI settle
+        cv2.waitKey(1)
