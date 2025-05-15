@@ -14,7 +14,7 @@ TEMP_IMAGE_PATH = '/home/carl/captured_image.jpg'
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 
-# Load YOLOv8 model
+# Load model
 model = YOLO(MODEL_PATH)
 class_names = ['ArtDeco', 'Ethnic', 'Special', 'Traditional']
 
@@ -25,7 +25,7 @@ def init_camera():
     picam2.start()
     return picam2
 
-# Center the image in a black canvas
+# Add padding to center image
 def center_image_on_canvas(image, canvas_width, canvas_height):
     h, w = image.shape[:2]
     top = (canvas_height - h) // 2
@@ -34,7 +34,7 @@ def center_image_on_canvas(image, canvas_width, canvas_height):
     right = canvas_width - w - left
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
 
-# Capture and handle user decision
+# Take image and wait for 'y' or 'p'
 def capture_and_ask_user(picam2):
     window_name = "Captured Image - Press 'y' to keep, 'p' to retake"
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
@@ -43,7 +43,6 @@ def capture_and_ask_user(picam2):
 
     while True:
         image = picam2.capture_array()
-        print("Image captured.")
         image_resized = cv2.resize(image, (640, 640))[:, :, ::-1]
         image_display = center_image_on_canvas(image_resized, SCREEN_WIDTH, SCREEN_HEIGHT)
         cv2.imshow(window_name, image_display)
@@ -52,34 +51,31 @@ def capture_and_ask_user(picam2):
         while True:
             key = cv2.waitKey(0) & 0xFF
             if key == ord('y'):
-                print("Image accepted. Saving...")
+                print("Image accepted. Saving and classifying...")
                 cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
-                cv2.destroyWindow(window_name)
-                return TEMP_IMAGE_PATH
+                return TEMP_IMAGE_PATH, window_name
             elif key == ord('p'):
                 print("Retaking image...")
-                break  # go back to outer loop to capture again
+                break
             else:
                 print("Only 'y' to keep, or 'p' to retake.")
-                continue
 
-# Save with incremental filename
+# Save image to classified folder with numbered name
 def rename_and_save_image(image_path):
     os.makedirs(CLASSIFIED_DIR, exist_ok=True)
     count = len([f for f in os.listdir(CLASSIFIED_DIR) if f.startswith('classify_')])
     new_path = os.path.join(CLASSIFIED_DIR, f'classify_{count + 1}.jpg')
     os.rename(image_path, new_path)
-    print(f"Image saved as {new_path}")
     return new_path
 
-# Predict using YOLOv8
+# Run YOLO classification
 def predict(image_path):
     results = model.predict(image_path)
     class_id = results[0].probs.top1
     confidence = results[0].probs.top1conf
     return class_names[class_id], confidence
 
-# Show result and wait for 'c'
+# Show classification result
 def show_classification_result(image_path, label, confidence):
     image = cv2.imread(image_path)
     cv2.putText(image, f"Label: {label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -90,36 +86,34 @@ def show_classification_result(image_path, label, confidence):
     result_window = "Classification Result"
     cv2.namedWindow(result_window, cv2.WINDOW_NORMAL)
     cv2.setWindowProperty(result_window, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-    cv2.imshow(result_window, image_display)
     cv2.moveWindow(result_window, 0, 0)
+    cv2.imshow(result_window, image_display)
     cv2.waitKey(1)
 
     print("Press 'c' to capture another image.")
-
     while True:
         key = cv2.waitKey(0) & 0xFF
         if key == ord('c'):
-            print("Continuing to capture...")
+            print("Continuing...")
             cv2.destroyWindow(result_window)
             return
         else:
-            print("Invalid key. Press 'c' to continue.")
+            print("Only 'c' is valid.")
 
-# Main loop
+# Main app logic
 if __name__ == '__main__':
-    print("Starting Barong Tagalog Design Classification...")
+    print("Launching Barong Tagalog Design Classifier...")
     picam2 = init_camera()
 
     while True:
-        image_path = capture_and_ask_user(picam2)
+        image_path, capture_window = capture_and_ask_user(picam2)
         if image_path is None:
-            print("Exiting program.")
             break
 
+        label, confidence = predict(image_path)
         classified_path = rename_and_save_image(image_path)
-        label, confidence = predict(classified_path)
-        print(f"Predicted: {label}, Confidence: {confidence:.2f}")
 
+        cv2.destroyWindow(capture_window)  # Destroy capture window *after* classification is ready
         show_classification_result(classified_path, label, confidence)
 
     cv2.destroyAllWindows()
