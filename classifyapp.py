@@ -38,35 +38,31 @@ def center_image_on_canvas(image, canvas_width, canvas_height):
 
 # Capture image and ask user if they want to keep it
 def capture_and_ask_user(picam2):
-    window_name = "Captured Image - Press 'y' to keep, 'n' to discard, 'esc' to exit"
+    window_name = "Captured Image - Press 'y' to keep, 'n' to quit, any key to retake"
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.moveWindow(window_name, 0, 0)
+
     while True:
         image = picam2.capture_array()
         print("Image captured.")
         image_resized = cv2.resize(image, (640, 640))[:, :, ::-1]
         image_display = center_image_on_canvas(image_resized, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow(window_name, image_display)
-        cv2.moveWindow(window_name, 0, 0)
         cv2.waitKey(1)  # Ensure window gets focus
 
         key = cv2.waitKey(0) & 0xFF
-        if key == 27:  # ESC
-            print("Exiting capture loop.")
-            cv2.destroyAllWindows()
-            return None, None
-        elif key == ord('y'):
+        if key == ord('y'):
             print("Image accepted. Saving and classifying...")
             cv2.imwrite(TEMP_IMAGE_PATH, image_resized)
-            return TEMP_IMAGE_PATH, window_name
+            return TEMP_IMAGE_PATH
         elif key == ord('n'):
-            print("Image discarded.")
-            cv2.destroyWindow(window_name)
-            continue
+            print("User chose to quit.")
+            return 'quit'
         else:
-            print("Invalid key. Retaking image...")
-            continue  # Retain window
+            print("Retaking image...")
+            continue  # Retain window without flickering
 
 # Rename image as classify_#.jpg
 def rename_and_save_image(image_path):
@@ -84,7 +80,7 @@ def predict(image_path):
     confidence = results[0].probs.top1conf
     return class_names[class_id], confidence
 
-# Show result fullscreen and wait for user input
+# Show result fullscreen and wait for user to press 'c'
 def show_classification_result(image_path, label, confidence):
     image = cv2.imread(image_path)
     cv2.putText(image, f"Label: {label}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -97,29 +93,31 @@ def show_classification_result(image_path, label, confidence):
     cv2.setWindowProperty(result_window, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.imshow(result_window, image_display)
     cv2.moveWindow(result_window, 0, 0)
-    cv2.waitKey(1)  # Flush buffer to ensure window is focused
+    cv2.waitKey(1)  # Force window focus
 
-    print("Press 'c' to capture another image or 'q' to quit.")
+    print("Press 'c' to capture another image.")
+
     while True:
         key = cv2.waitKey(0) & 0xFF
-        if key == ord('q'):
-            print("Quitting program.")
-            cv2.destroyAllWindows()
-            return 'quit'
-        elif key == ord('c'):
+        if key == ord('c'):
             print("Continuing to capture...")
             cv2.destroyWindow(result_window)
-            return 'continue'
+            return
         else:
-            print("Invalid key. Press 'c' or 'q'.")
+            print("Invalid key. Press 'c' to continue.")
 
 # Main loop
 if __name__ == '__main__':
     print("Starting Barong Tagalog Design Classification...")
     picam2 = init_camera()
 
+    capture_window = None
     while True:
-        image_path, capture_window = capture_and_ask_user(picam2)
+        image_path = capture_and_ask_user(picam2)
+        if image_path == 'quit':
+            print("Exiting program.")
+            break
+
         if image_path is None:
             print("No image selected. Exiting...")
             break
@@ -128,20 +126,9 @@ if __name__ == '__main__':
         label, confidence = predict(classified_path)
         print(f"Predicted: {label}, Confidence: {confidence:.2f}")
 
-        result = show_classification_result(classified_path, label, confidence)
+        show_classification_result(classified_path, label, confidence)
 
-        # Destroy the capture window 5 seconds after result is displayed
-        if capture_window:
-            def delayed_destroy():
-                time.sleep(5)
-                try:
-                    cv2.destroyWindow(capture_window)
-                except:
-                    pass
-            threading.Thread(target=delayed_destroy, daemon=True).start()
-
-        if result == 'quit':
-            break
-
-        # Let the UI settle
+        # Let OpenCV settle before re-looping
         cv2.waitKey(1)
+
+    cv2.destroyAllWindows()
